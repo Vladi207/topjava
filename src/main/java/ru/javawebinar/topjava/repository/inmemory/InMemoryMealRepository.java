@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.inmemory;
 
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -33,7 +34,7 @@ public class InMemoryMealRepository implements MealRepository {
             repository.put(meal.getId(), meal);
             return meal;
         }
-        if (meal.getId() != userId) return null;
+        if (meal.getUserId() != userId) return null;
         // handle case: update, but not present in storage
         return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
     }
@@ -60,7 +61,7 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public List<MealTo> getBetweenHalfOpen(int userId, int caloriesPerDay, LocalTime startTime, LocalTime endTime, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<MealTo> getBetweenHalfOpen(int userId, int caloriesPerDay, LocalTime startTime, LocalTime endTime, @Nullable LocalDateTime startDate, @Nullable LocalDateTime endDate) {
         return getFilteredTos(getAll(userId), caloriesPerDay, startTime,endTime).stream()
                 .filter(mealTo -> isDateBetweenHalfOpen(mealTo.getDateTime(), startDate, endDate))
                 .collect(Collectors.toList());
